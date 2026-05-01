@@ -1,0 +1,226 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": { "type": "postgres", "uid": "PBFA97CFB590B2093" },
+      "gridPos": { "h": 3, "w": 24, "x": 0, "y": 0 },
+      "id": 1,
+      "options": {
+        "code": { "language": "plaintext", "showLineNumbers": false, "showMiniMap": false },
+        "content": "# Crypto Price Pipeline Dashboard\nReal-time data from CoinGecko → Kafka → PostgreSQL → Grafana",
+        "mode": "markdown"
+      },
+      "title": "",
+      "type": "text"
+    },
+    {
+      "datasource": { "type": "postgres", "uid": "PBFA97CFB590B2093" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "decimals": 2,
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] },
+          "unit": "currencyUSD"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 3 },
+      "id": 2,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": { "type": "postgres", "uid": "PBFA97CFB590B2093" },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT coin_id AS metric, current_price FROM crypto_prices cp1 WHERE timestamp = (SELECT MAX(timestamp) FROM crypto_prices cp2 WHERE cp2.coin_id = cp1.coin_id) ORDER BY current_price DESC",
+          "refId": "A"
+        }
+      ],
+      "title": "Current Prices",
+      "transformations": [
+        { "id": "organize", "options": { "excludeByName": {}, "indexByName": {}, "renameByName": { "metric": "Coin", "current_price": "Price" } } }
+      ],
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "postgres", "uid": "PBFA97CFB590B2093" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "axisCenteredZero": false, "axisLabel": "", "lineWidth": 2, "pointSize": 5, "scaleDistribution": { "type": "linear" }, "showPoints": "never", "spanNulls": true },
+          "decimals": 2,
+          "unit": "currencyUSD"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 10, "w": 12, "x": 0, "y": 11 },
+      "id": 3,
+      "options": { "legend": { "calcs": ["last", "mean", "min", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
+      "targets": [
+        {
+          "datasource": { "type": "postgres", "uid": "PBFA97CFB590B2093" },
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT timestamp AS time, coin_id AS metric, current_price FROM crypto_prices WHERE $__timeFilter(timestamp) AND coin_id IN ($coin) ORDER BY timestamp",
+          "refId": "A"
+        }
+      ],
+      "title": "Price Over Time",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "postgres", "uid": "PBFA97CFB590B2093" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "axisCenteredZero": false, "axisLabel": "", "lineWidth": 2, "pointSize": 5, "scaleDistribution": { "type": "linear" }, "showPoints": "never", "spanNulls": true },
+          "decimals": 4,
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 10, "w": 12, "x": 12, "y": 11 },
+      "id": 4,
+      "options": { "legend": { "calcs": ["last"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
+      "targets": [
+        {
+          "datasource": { "type": "postgres", "uid": "PBFA97CFB590B2093" },
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT timestamp AS time, coin_id AS metric, price_change_percentage_24h FROM crypto_prices WHERE $__timeFilter(timestamp) AND coin_id IN ($coin) ORDER BY timestamp",
+          "refId": "A"
+        }
+      ],
+      "title": "24h Price Change %",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "postgres", "uid": "PBFA97CFB590B2093" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "axisCenteredZero": false, "axisLabel": "", "lineWidth": 2, "pointSize": 5, "scaleDistribution": { "type": "linear" }, "showPoints": "never", "spanNulls": true },
+          "decimals": 0,
+          "unit": "currencyUSD"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 9, "w": 12, "x": 0, "y": 21 },
+      "id": 5,
+      "options": { "legend": { "calcs": ["last"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
+      "targets": [
+        {
+          "datasource": { "type": "postgres", "uid": "PBFA97CFB590B2093" },
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT timestamp AS time, coin_id AS metric, market_cap FROM crypto_prices WHERE $__timeFilter(timestamp) AND coin_id IN ($coin) ORDER BY timestamp",
+          "refId": "A"
+        }
+      ],
+      "title": "Market Cap Over Time",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "postgres", "uid": "PBFA97CFB590B2093" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "axisCenteredZero": false, "axisLabel": "", "lineWidth": 2, "pointSize": 5, "scaleDistribution": { "type": "linear" }, "showPoints": "never", "spanNulls": true },
+          "decimals": 2,
+          "unit": "currencyUSD"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 9, "w": 12, "x": 12, "y": 21 },
+      "id": 6,
+      "options": { "legend": { "calcs": ["last"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
+      "targets": [
+        {
+          "datasource": { "type": "postgres", "uid": "PBFA97CFB590B2093" },
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT timestamp AS time, coin_id AS metric, total_volume FROM crypto_prices WHERE $__timeFilter(timestamp) AND coin_id IN ($coin) ORDER BY timestamp",
+          "refId": "A"
+        }
+      ],
+      "title": "Trading Volume Over Time",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "postgres", "uid": "PBFA97CFB590B2093" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "custom": { "align": "center", "cellOptions": { "type": "auto" }, "inspect": false },
+          "decimals": 2,
+          "mappings": []
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "24h Change %" }, "properties": [{ "id": "unit", "value": "percent" }, { "id": "color", "value": { "mode": "thresholds" } }, { "id": "thresholds", "value": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 0 }] } }] },
+          { "matcher": { "id": "byName", "options": "Price" }, "properties": [{ "id": "unit", "value": "currencyUSD" }] },
+          { "matcher": { "id": "byName", "options": "Market Cap" }, "properties": [{ "id": "unit", "value": "currencyUSD" }, { "id": "decimals", "value": 0 }] },
+          { "matcher": { "id": "byName", "options": "Volume 24h" }, "properties": [{ "id": "unit", "value": "currencyUSD" }, { "id": "decimals", "value": 0 }] }
+        ]
+      },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 30 },
+      "id": 7,
+      "options": { "cellHeight": "md", "footer": { "countRows": 0, "fields": "", "reducer": ["sum"], "show": false }, "showHeader": true, "sortBy": [{ "desc": true, "displayName": "Market Cap" }] },
+      "targets": [
+        {
+          "datasource": { "type": "postgres", "uid": "PBFA97CFB590B2093" },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT DISTINCT ON (coin_id) coin_id AS \"Coin\", current_price AS \"Price\", price_change_percentage_24h AS \"24h Change %\", market_cap AS \"Market Cap\", total_volume AS \"Volume 24h\", high_24h AS \"24h High\", low_24h AS \"24h Low\" FROM crypto_prices ORDER BY coin_id, timestamp DESC",
+          "refId": "A"
+        }
+      ],
+      "title": "Latest Market Data",
+      "type": "table"
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 38,
+  "tags": ["crypto", "pipeline"],
+  "templating": {
+    "list": [
+      {
+        "current": { "selected": true, "text": ["All"], "value": ["$__all"] },
+        "datasource": { "type": "postgres", "uid": "PBFA97CFB590B2093" },
+        "definition": "SELECT DISTINCT coin_id FROM crypto_prices ORDER BY coin_id",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Coin",
+        "multi": true,
+        "name": "coin",
+        "options": [],
+        "query": "SELECT DISTINCT coin_id FROM crypto_prices ORDER BY coin_id",
+        "refresh": 2,
+        "regex": "",
+        "sort": 1,
+        "type": "query"
+      }
+    ]
+  },
+  "time": { "from": "now-1h", "to": "now" },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Crypto Price Pipeline",
+  "uid": "crypto-pipeline-dashboard",
+  "version": 1
+}
