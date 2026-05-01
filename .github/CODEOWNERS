@@ -1,0 +1,18 @@
+# Global owner — all files
+* @casper-justus
+
+# Producer service
+src/producer/ @casper-justus
+
+# Consumer service
+src/consumer/ @casper-justus
+
+# Grafana dashboards & provisioning
+grafana/ @casper-justus
+
+# Infrastructure
+docker-compose.yml @casper-justus
+init.sql @casper-justus
+
+# CI/CD & security workflows
+.github/workflows/ @casper-justus
