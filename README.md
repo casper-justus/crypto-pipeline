@@ -1,6 +1,6 @@
 # Crypto Price Streaming Pipeline
 
-[![CI Pipeline](https://github.com/kasper/crypto-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/kasper/crypto-pipeline/actions/workflows/ci.yml)
+[![CI Pipeline](https://github.com/casper-justus/crypto-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/casper-justus/crypto-pipeline/actions/workflows/ci.yml)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -82,7 +82,7 @@ A production-style streaming data pipeline that ingests live crypto prices, proc
 ### Start the entire pipeline
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/casper-justus/crypto-pipeline.git
 cd crypto-pipeline
 docker compose up -d --build
 ```
